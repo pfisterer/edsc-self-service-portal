@@ -1,0 +1,8 @@
+{
+	"realm": "EDSC",
+	"auth-server-url": "https://keycloak.dhbw.e.farberg.de/auth/",
+	"ssl-required": "external",
+	"resource": "edsc-self-service",
+	"public-client": true,
+	"confidential-port": 0
+}

@@ -1,0 +1,15 @@
+apiVersion: skaffold/v1
+kind: Config
+
+metadata:
+  name: edsc-self-service-portal
+
+build:
+  artifacts:
+    - image: edsc-self-service-portal
+      context: .
+
+deploy:
+  kubectl:
+    manifests:
+      - config/k8s-deployment.yaml

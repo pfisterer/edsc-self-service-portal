@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: edsc-self-service-portal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "edsc-self-service-portal"
+  template:
+    metadata:
+      labels:
+        app: "edsc-self-service-portal"
+    spec:
+      containers:
+        - name: edsc-self-service-portal
+          image: edsc-self-service-portal
+          args:
+            - "--dryrun"
+            - "--verbose"
+          ports:
+            - containerPort: 8080
+#          livenessProbe:
+#            httpGet:
+#              path: /health/liveness
+#              port: 7777
+#            initialDelaySeconds: 5
+#            periodSeconds: 30
+#          readinessProbe:
+#            httpGet:
+#              path: /health/readiness
+#              port: 7777
+#            initialDelaySeconds: 5
+#            periodSeconds: 30
+#          resources:
+#            limits:
+#              cpu: ".1"
+#              memory: "256Mi"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: edsc-self-service-portal-dns-service
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: edsc-self-service.dhbw.e.farberg.de
+spec:
+  selector:
+    app: "edsc-self-service-portal"
+  ports:
+    # cf. https://github.com/kubernetes/kubernetes/pull/64471 (Allow for mixed UDP/TCP ports on LoadBalancer Services)
+    #    - protocol: TCP
+    #      port: 53
+    #      targetPort: 53
+    - name: dns
+      protocol: UDP
+      port: 53
+      targetPort: 53
+  type: LoadBalancer
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: edsc-self-service-portal-web-service
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: edsc-self-service.dhbw.e.farberg.de
+spec:
+  selector:
+    app: "edsc-self-service-portal"
+  ports:
+    - name: web
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: edsc-self-service-portal-ingress
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            backend:
+              serviceName: edsc-self-service-portal-web-service
+              servicePort: 8080
