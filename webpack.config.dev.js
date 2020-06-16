@@ -39,7 +39,8 @@ module.exports =
 		new NodemonPlugin({
 			watch: './app',
 			verbose: true,
-			script: './app/server.js'
+			script: './app/server.js',
+			args: ['--verbose']
 		})
 	]
 };
