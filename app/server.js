@@ -1,6 +1,7 @@
 const path = require('path')
 const express = require('express')
 const session = require('express-session')
+const { addAsync } = require('@awaitjs/express');
 const bodyParser = require('body-parser')
 const Keycloak = require('keycloak-connect')
 const cors = require('cors')
@@ -70,7 +71,7 @@ options = Object.assign({}, options, {
 
 
 // Create express app
-const app = express();
+const app = addAsync(express());
 const devMode = app.get('env') === 'development';
 const port = 8080
 

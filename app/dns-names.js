@@ -1,53 +1,51 @@
-module.exports = function (backend) {
-	const router = require('express').Router()
-	const Client = require('kubernetes-client').Client
-	const client = new Client(/*{ config: config.fromKubeconfig(), version: '1.13' }*/)
+const { addAsync } = require('@awaitjs/express');
+const router = addAsync(require('express').Router())
+const CustomResourceAccess = require('./custom-resource-access')
 
-	const domains = [
-		{
-			"id": "1",
-			"name": "*.{username}.e.farberg.de",
-			"description": "Bla"
-		}, {
-			"id": "2",
-			"name": "*.{username}.users.edsc.cloud",
-			"description": "Bla"
+module.exports = function (options) {
+	const crs = new CustomResourceAccess(options)
+	const log = options.logger("dns")
+
+	function crToJson(cr) {
+		return {
+			"spec": cr.spec,
+			"status": cr.status
 		}
-	]
+	}
 
-	function domainById(id) {
-		var filtered = domains.filter(d => d.id === id)
-		if (filtered && filtered.length > 0)
-			return filtered[0]
+	async function crsOfUser(userinfo) {
+		return (await crs.listItems())
+			.filter(cr => cr.spec.associatedPrincipals.includes(userinfo.preferred_username))
+	}
+
+	async function domainById(id, userinfo) {
+		log.debug(`domainIdsOfUser: Searching id ${id} of user`, userinfo.preferred_username)
+		const result = (await crsOfUser(userinfo))
+			.filter(cr => cr.spec.domainName === id)
+
+		if (result && result.length > 0)
+			return crToJson(result[0])
 
 		throw `Domain id ${id} not found`
 	}
 
-	function dnssecOfUser(userinfo, domain) {
-		let d = `${userinfo.preferred_username}.${domain.name}`
-
-		let r = {
-			"id": domain.id + "-" + userinfo.preferred_username,
-			"domain": d,
-			"rfc2136_nameserver": "123.456.789.012",
-			"rfc2136_nameserver_port": 53,
-			"rfc2136_zone": `${d}.`,
-			"rfc2136_tsigSecret": "KtmqLIsadfISWnQ==",
-			"rfc2136_tsigKeyname": `${d}`,
-			"rfc2136_tsigAlg": "hmac-sha512",
-			"rfc2136_tsigAlgLetsencrypt": "HMACSHA512"
-		}
-
-		return r
+	async function domainIdsOfUser(userinfo) {
+		return (await crsOfUser(userinfo))
+			.map(cr => cr.spec.domainName)
 	}
 
-	router.get('/domains', backend.keycloak.enforcer(), (req, res) => {
-		res.json(domains)
+	router.getAsync('/domains', options.keycloak.enforcer(), async (req, res) => {
+		const userinfo = options.userinfo(req);
+		const domainIds = await domainIdsOfUser(userinfo)
+		log.debug(`Domain ids of user ${userinfo.preferred_username}`, domainIds)
+		res.json(domainIds)
 	})
 
-	router.get('/domains/:id/dnssec', backend.keycloak.enforcer(), (req, res) => {
-		const userinfo = backend.userinfo(req);
-		const dnssecUserData = dnssecOfUser(userinfo, domainById(req.params.id))
+	router.getAsync('/domains/:id', options.keycloak.enforcer(), async (req, res) => {
+		const userinfo = options.userinfo(req);
+		const id = req.params.id
+		const dnssecUserData = await domainById(id, userinfo)
+		log.debug(`Domain id ${id} of user ${userinfo.preferred_username} = `, dnssecUserData)
 		res.json(dnssecUserData)
 	})
 
