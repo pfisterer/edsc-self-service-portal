@@ -1,4 +1,7 @@
-FROM node:14-alpine
+# -------------------------------------------------------------
+# Builder
+# -------------------------------------------------------------
+FROM node:14-alpine AS builder
 LABEL maintainer="Dennis Pfisterer, http://www.dennis-pfisterer.de"
 
 # Copy everything and create workdir
@@ -16,17 +19,19 @@ COPY webpack.config.prod.js /app/
 
 RUN npm run build
 
+# -------------------------------------------------------------
+# Final container image
+# -------------------------------------------------------------
 FROM node:14-alpine
 
 WORKDIR /app
 
-COPY --from=0 /app/node_modules/ /app/node_modules/
-COPY --from=0 /app/dist/frontend/ /app/dist/frontend/
-COPY --from=0 /app/dist/backend/ /app/app/
+COPY --from=builder /app/node_modules/ /app/node_modules/
+COPY --from=builder /app/dist/frontend/ /app/dist/frontend/
+COPY --from=builder /app/dist/backend/ /app/app/
 
+# Debugging output
 RUN find /app | grep -v node_modules
-
-
 
 # set our node environment, either development or production
 ARG NODE_ENV=production
