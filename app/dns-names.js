@@ -75,11 +75,11 @@ module.exports = function (options) {
 			"spec": {
 				"domainName": id,
 				"adminContact": adminContact,
-				"expireSeconds": jsonData.expireSeconds || 60,
-				"minimumSeconds": jsonData.minimumSeconds || 60,
-				"refreshSeconds": jsonData.refreshSeconds || 60,
-				"retrySeconds": jsonData.retrySeconds || 60,
-				"ttlSeconds": jsonData.ttlSeconds || 60,
+				"expireSeconds": parseInt(jsonData.expireSeconds) || 60,
+				"minimumSeconds": parseInt(jsonData.minimumSeconds) || 60,
+				"refreshSeconds": parseInt(jsonData.refreshSeconds) || 60,
+				"retrySeconds": parseInt(jsonData.retrySeconds) || 60,
+				"ttlSeconds": parseInt(jsonData.ttlSeconds) || 60,
 				"associatedPrincipals": [userinfo.sub]
 			}
 		}
