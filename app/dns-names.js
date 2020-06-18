@@ -4,7 +4,8 @@ const CustomResourceAccess = require('./custom-resource-access')
 
 module.exports = function (options) {
 	const crs = new CustomResourceAccess(options)
-	const log = options.logger("dns")
+	const log = options.logger("dns-names")
+	const policy = options.policy
 
 	function crToJson(cr) {
 		return {
@@ -15,16 +16,26 @@ module.exports = function (options) {
 
 	async function crsOfUser(userinfo) {
 		return (await crs.listItems())
-			.filter(cr => cr.spec.associatedPrincipals.includes(userinfo.preferred_username))
+			.filter(cr =>
+				cr.spec.associatedPrincipals.includes(userinfo.sub))
 	}
 
-	async function domainById(id, userinfo) {
-		log.debug(`domainIdsOfUser: Searching id ${id} of user`, userinfo.preferred_username)
+	async function crOfUserById(id, userinfo) {
 		const result = (await crsOfUser(userinfo))
 			.filter(cr => cr.spec.domainName === id)
 
 		if (result && result.length > 0)
-			return crToJson(result[0])
+			return result[0]
+
+		return null
+	}
+
+	async function domainById(id, userinfo) {
+		log.debug(`domainIdsOfUser: Searching id ${id} of user`, userinfo.sub)
+
+		const result = await crOfUserById(id, userinfo)
+		if (result)
+			return crToJson(result)
 
 		throw `Domain id ${id} not found`
 	}
@@ -34,21 +45,112 @@ module.exports = function (options) {
 			.map(cr => cr.spec.domainName)
 	}
 
-	router.getAsync('/domains', options.keycloak.enforcer(), async (req, res) => {
+	async function deleteDomain(id, userinfo) {
+		const domain = await crOfUserById(id, userinfo)
+		return await crs.deleteItem(domain.metadata.name)
+	}
+
+	async function getAvailableDomains(userinfo) {
+		const policyResult = policy.availableDomains(userinfo)
+		const policyAvailableDomains = policyResult.domains
+
+		if (policyResult.error)
+			return { error: policyResult.error }
+
+		const existingDomains = await domainIdsOfUser(userinfo)
+		const available = policyAvailableDomains.filter(name => !existingDomains.includes(name))
+
+		return { available }
+	}
+
+	async function createDomain(id, userinfo, jsonData) {
+		let adminContact = userinfo.email.replace("@", ".")
+
+		let cr = {
+			"apiVersion": "dnsseczone.farberg.de/v1",
+			"kind": "DnssecZone",
+			"metadata": {
+				"name": id
+			},
+			"spec": {
+				"domainName": id,
+				"adminContact": adminContact,
+				"expireSeconds": jsonData.expireSeconds || 60,
+				"minimumSeconds": jsonData.minimumSeconds || 60,
+				"refreshSeconds": jsonData.refreshSeconds || 60,
+				"retrySeconds": jsonData.retrySeconds || 60,
+				"ttlSeconds": jsonData.ttlSeconds || 60,
+				"associatedPrincipals": [userinfo.sub]
+			}
+		}
+		log.debug("Creating domain cr: ", cr)
+		return await crs.createItem(cr)
+	}
+
+	router.getAsync('/domains/available', options.keycloak.enforcer(), async (req, res) => {
+		const userinfo = options.userinfo(req);
+		const result = await getAvailableDomains(userinfo)
+
+		if (!result.error) {
+			res.json(result.available)
+		} else {
+			log.error(`Error while getting available domains from policy:`, policy.error)
+			res.status(501 /* not implemented */).json({ error: policyResult.error })
+		}
+
+	})
+
+	router.postAsync('/domains/list', options.keycloak.enforcer(), async (req, res) => {
+		try {
+			const userinfo = options.userinfo(req);
+
+			if (!userinfo.email_verified || !userinfo.email) {
+				res.status(403 /*Forbidden*/).send("Not allowed: the email address of your account has not been verified.")
+				return
+			}
+
+			const values = req.body
+			const policyResult = await getAvailableDomains(userinfo)
+
+			if (policyResult.error || !policyResult.available.includes(values.domainName)) {
+				res.status(403 /*Forbidden*/).send("Not allowed: policy error")
+			}
+
+			await createDomain(values.domainName, userinfo, values)
+			res.json({ "done": true })
+		} catch (e) {
+			log.error("Unable to create domain: ", e)
+			res.status(500 /*Internal server error*/).send("")
+		}
+	})
+
+	router.getAsync('/domains/list', options.keycloak.enforcer(), async (req, res) => {
 		const userinfo = options.userinfo(req);
 		const domainIds = await domainIdsOfUser(userinfo)
-		log.debug(`Domain ids of user ${userinfo.preferred_username}`, domainIds)
+		//log.debug(`Domain ids of user ${userinfo.sub}`, domainIds)
 		res.json(domainIds)
 	})
 
-	router.getAsync('/domains/:id', options.keycloak.enforcer(), async (req, res) => {
+	router.getAsync('/domains/domain/:id', options.keycloak.enforcer(), async (req, res) => {
 		const userinfo = options.userinfo(req);
 		const id = req.params.id
 		const dnssecUserData = await domainById(id, userinfo)
-		log.debug(`Domain id ${id} of user ${userinfo.preferred_username} = `, dnssecUserData)
+		//log.debug(`Domain id ${id} of user ${userinfo.sub} = `, dnssecUserData)
 		res.json(dnssecUserData)
 	})
 
+	router.deleteAsync('/domains/domain/:id', options.keycloak.enforcer(), async (req, res) => {
+		try {
+			const id = req.params.id
+			const userinfo = options.userinfo(req);
+			const result = await deleteDomain(id, userinfo)
+			res.json({ ok: true })
+
+		} catch (e) {
+			log.error(`Unable to delete domain ${req.params.id}: `, e)
+			res.status(401 /* not found */).send("Unable to delete domain")
+		}
+	})
 
 	return router
 }

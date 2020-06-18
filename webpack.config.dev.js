@@ -37,10 +37,11 @@ module.exports =
 			filename: "./index.html"
 		}),
 		new NodemonPlugin({
+			nodeArgs: ["--trace-warnings"],
 			watch: './app',
 			verbose: true,
 			script: './app/server.js',
-			args: ['--verbose']
+			args: ['--verbose', '--mode', 'development']
 		})
 	]
 };

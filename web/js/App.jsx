@@ -18,16 +18,21 @@ import Container from '@material-ui/core/Container';
 
 import { mainListItems, secondaryListItems } from './menu_items.jsx';
 import Home from './Home.jsx';
-import Dns from './Dns.jsx';
+import Dns from './dns/Dns.jsx';
 import useStyles from './styles.jsx'
 
 function Copyright() {
 	return (
 		<Typography variant="body2" color="textSecondary" align="center">
 			{'Copyright © '}
+			<Link color="inherit" href="https://dennis-pfisterer.de/" target="_blank">
+				Dennis Pfisterer
+      	</Link>
+			{', '}
 			<Link color="inherit" href="https://edsc-dhbw.github.io/" target="_blank">
 				Enterprise Data Science Center (EDSC)
-      	</Link>{' '}
+      	</Link>
+			{' '}
 			{new Date().getFullYear()}
 			{'.'}
 			<br /><br />
@@ -59,11 +64,13 @@ export default function Dashboard() {
 						<Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
 							EDSC Portal
           		</Typography>
+						{/*
 						<IconButton color="inherit">
-							<Badge badgeContent={4} color="secondary">
+							<Badge badgeContent={''} color="secondary">
 								<NotificationsIcon />
 							</Badge>
 						</IconButton>
+						*/}
 					</Toolbar>
 				</AppBar>
 
@@ -98,7 +105,6 @@ export default function Dashboard() {
 
 					<Copyright />
 				</main>
-
 
 			</div>
 		</Router>

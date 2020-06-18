@@ -20,11 +20,16 @@ let options = optionparser
 	.option('--crd-group <group>', 'CRD group name', 'dnsseczone.farberg.de')
 	.option('--crd-version <version>', 'CRD version', 'v1')
 	.option('--crd-plural <plural>', 'CRD Plural', 'dnsseczones')
+	.option('--port <port>', 'Web server port', 8080)
+	.option('--policy-file <file>', 'The policy to load', './edsc-policy')
 	.option('--namespace <ns>', 'Kubernetes namespace', 'default')
+	.option('--mode <mode>', 'The mode to start the app in (development or production)', 'production')
 	.version('0.0.1')
 	.addHelpCommand()
 	.parse()
 	.opts()
+
+const devMode = options.mode === "development"
 
 // ------------------------------------------------
 // Set global log level options
@@ -40,7 +45,6 @@ function getLogger(name) {
 
 const log = getLogger("main")
 
-
 // ------------------------------------------------
 // Setup express + keycloak
 // ------------------------------------------------
@@ -54,26 +58,31 @@ else
 const keycloak = new Keycloak({ store: sessionStore }, options.keycloakConfig);
 
 // ------------------------------------------------
+// Create policy
+// ------------------------------------------------
+
+const Policy = require(options.policyFile)
+const policy = new Policy(options)
+log.debug(`Loaded policy from ${options.policyFile}: `, policy)
+
+// ------------------------------------------------
 // Create options to be used for the app
 // ------------------------------------------------
 
 options = Object.assign({}, options, {
+	logger: getLogger,
 	keycloak,
 	userinfo(req) {
 		return req.kauth.grant.id_token.content;
 	},
-	logger: getLogger
+	policy
 })
 
 // ------------------------------------------------
 // Setup express
 // ------------------------------------------------
 
-
-// Create express app
 const app = addAsync(express());
-const devMode = app.get('env') === 'development';
-const port = 8080
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -87,7 +96,6 @@ app.use(session({
 
 app.use(keycloak.middleware({}));
 
-
 // ------------------------------------------------
 // Setup browsersync in dev mode
 // ------------------------------------------------
@@ -100,7 +108,9 @@ if (devMode) {
 
 	var bs = browserSync.create().init({
 		logSnippet: false,
-		files: ["dist/*"]
+		server: false,
+		logLevel: "info",
+		files: ["dist/frontend/*", "dist/backend/*"]
 	});
 
 	app.use(require('connect-browser-sync')(bs));
@@ -120,6 +130,6 @@ app.use('/api/v1/dns', require('./dns-names')(options))
 app.use('*', function (req, res) { res.status(404).send('Not found'); });
 
 // Start server
-app.listen(port, function () {
-	log.debug(`Started on port ${port}, access e.g., via http://localhost:${port}`);
+app.listen(options.port, () => {
+	log.debug(`Started on port ${options.port}, access e.g., via http://localhost:${options.port}`);
 });

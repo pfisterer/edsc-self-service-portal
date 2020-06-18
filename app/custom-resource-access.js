@@ -3,8 +3,7 @@ const k8s = require('@kubernetes/client-node');
 class CrAccess {
 
 	constructor(options) {
-		this.log = options.logger ? options.logger("CrdWatcher") : console
-		this.log.debug("constructor: New instance with options: ", options);
+		this.log = options.logger ? options.logger("CrAccess") : console
 
 		this.crdGroup = options.crdGroup;
 		this.crdVersion = options.crdVersion;
@@ -31,6 +30,26 @@ class CrAccess {
 		);
 
 		return res.body.items
+	}
+
+	async deleteItem(name) {
+		let body = {} // https://github.com/kubernetes-client/java/blob/master/kubernetes/docs/V1DeleteOptions.md
+
+		return await this.customObjectsApi.deleteNamespacedCustomObject(
+			this.crdGroup,
+			this.crdVersion,
+			this.namespace,
+			this.crdPlural,
+			name, body)
+	}
+
+	async createItem(cr) {
+		return await this.customObjectsApi.createNamespacedCustomObject(
+			this.crdGroup,
+			this.crdVersion,
+			this.namespace,
+			this.crdPlural,
+			cr)
 	}
 
 }
