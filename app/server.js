@@ -24,7 +24,7 @@ let options = optionparser
 	.option('--policy-file <file>', 'The policy to load', './edsc-policy')
 	.option('--namespace <ns>', 'Kubernetes namespace', 'default')
 	.option('--mode <mode>', 'The mode to start the app in (development or production)', 'production')
-	.version('0.0.1')
+	.version('0.0.2')
 	.addHelpCommand()
 	.parse()
 	.opts()
