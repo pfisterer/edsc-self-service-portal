@@ -4,7 +4,7 @@
   "description": "ESDC Self-service Portal",
   "private": true,
   "scripts": {
-    "build": "webpack --config webpack.config.prod.js",
+    "build": "npx webpack --config webpack.config.prod.js",
     "start": "npx webpack --watch --config webpack.config.dev.js"
   },
   "author": "Dennis Pfisterer <github@farberg.de>",
