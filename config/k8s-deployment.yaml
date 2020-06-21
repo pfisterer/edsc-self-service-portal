@@ -17,7 +17,7 @@ spec:
           image: farberg/edsc-self-service-portal
           args:
             - "--mode"
-            - "development"
+            - "production"
             - "--verbose"
           ports:
             - containerPort: 8080

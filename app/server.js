@@ -21,7 +21,7 @@ let options = optionparser
 	.option('--crd-version <version>', 'CRD version', 'v1')
 	.option('--crd-plural <plural>', 'CRD Plural', 'dnsseczones')
 	.option('--port <port>', 'Web server port', 8080)
-	.option('--policy-file <file>', 'The policy to load', './edsc-policy')
+	.option('--policy-file <file>', 'The policy to load', 'edsc-policy')
 	.option('--namespace <ns>', 'Kubernetes namespace', 'default')
 	.option('--mode <mode>', 'The mode to start the app in (development or production)', 'production')
 	.version('0.0.2')
@@ -61,7 +61,7 @@ const keycloak = new Keycloak({ store: sessionStore }, options.keycloakConfig);
 // Create policy
 // ------------------------------------------------
 
-const Policy = require(options.policyFile)
+const Policy = require("./policies/" + options.policyFile)
 const policy = new Policy(options)
 log.debug(`Loaded policy from ${options.policyFile}: `, policy)
 
