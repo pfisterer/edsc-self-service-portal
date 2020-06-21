@@ -36,9 +36,7 @@ RUN find /app | grep -v node_modules
 ARG NODE_ENV=production
 ENV NODE_ENV $NODE_ENV
 
-# UDP and TCP
-EXPOSE 53
-EXPOSE 7777
+EXPOSE 8080
 
 ENTRYPOINT ["node", "app/server.js"]
 CMD [""]
