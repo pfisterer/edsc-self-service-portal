@@ -14,9 +14,10 @@ spec:
     spec:
       containers:
         - name: edsc-self-service-portal
-          image: edsc-self-service-portal
+          image: farberg/edsc-self-service-portal
           args:
-            - "--dryrun"
+            - "--mode"
+            - "development"
             - "--verbose"
           ports:
             - containerPort: 8080
