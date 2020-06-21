@@ -16,7 +16,16 @@ module.exports = [
 		node: {
 			__dirname: false
 		},
-		externals: [nodeExternals()]
+		module: {
+			rules: [
+				{
+					test: /\.(js|jsx)$/,
+					loader: 'shebang-loader'
+				}
+			]
+		},
+		//,externals: [nodeExternals()]
+		externals: { uws: "uws", emitter: "emitter", "browser-sync/lib/server/utils": "browser-sync/lib/server/utils" }
 	},
 	{
 		"mode": "production",
