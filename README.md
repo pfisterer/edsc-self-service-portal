@@ -4,6 +4,10 @@
 
 Run `npm start`
 
+## Build the Docker container
+
+Run `docker build -t farberg/edsc-self-service-portal .`
+
 ## Development Deployment to K8S
 
 Run `skaffold dev`
