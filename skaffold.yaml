@@ -6,7 +6,7 @@ metadata:
 
 build:
   artifacts:
-    - image: edsc-self-service-portal
+    - image: farberg/edsc-self-service-portal
       context: .
 
 deploy:
