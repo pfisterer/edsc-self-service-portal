@@ -13,7 +13,6 @@ RUN npm install --no-optional && npm cache clean --force
 
 # Install app
 COPY app/ app/
-COPY config/ config/
 COPY web/ web/
 COPY webpack.config.prod.js /app/
 
@@ -26,6 +25,7 @@ FROM node:14-alpine
 
 WORKDIR /app
 
+COPY config/ config/
 COPY --from=builder /app/dist/frontend/ /app/dist/frontend/
 COPY --from=builder /app/dist/backend/ /app/app/
 
