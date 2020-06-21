@@ -1,9 +1,7 @@
 class EdscPolicy {
 	constructor(options) {
-
+		this.valid_subdomain_regex = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]$/
 	}
-
-	valid_subdomain_regex = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]$/
 
 	availableDomains(userinfo) {
 		const username = userinfo.preferred_username
