@@ -1,6 +1,6 @@
 {
 	"realm": "master",
-	"auth-server-url": "https://keycloak.dhbw-mannheim.de/auth/",
+	"auth-server-url": "https://idp.dhbw-mannheim.de",
 	"ssl-required": "external",
 	"resource": "EDSC-self-service-portal-DEV",
 	"public-client": true,
