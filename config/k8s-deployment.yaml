@@ -43,8 +43,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: edsc-self-service-portal-web-service
-  annotations:
-    external-dns.alpha.kubernetes.io/hostname: edsc-self-service.dhbw.e.farberg.de
 spec:
   selector:
     app: "edsc-self-service-portal"
@@ -59,9 +57,17 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: edsc-self-service-portal-ingress
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: edsc-portal.edsc.farberg.de
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
+  tls:
+    - hosts:
+        - "edsc-portal.edsc.farberg.de"
   rules:
-    - http:
+    - host: edsc-portal.edsc.farberg.de
+      http:
         paths:
           - path: /
             backend:
