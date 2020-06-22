@@ -5,7 +5,7 @@ class EdscPolicy {
 
 	availableDomains(userinfo) {
 		const username = userinfo.preferred_username
-		const suffix = ".e.farberg.de"
+		const suffix = ".user.edsc.cloud"
 
 		if (!username.match(this.valid_subdomain_regex)) {
 			return {
