@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Formik, Form, Field } from 'formik';
-import { Button, LinearProgress } from '@material-ui/core';
+import { Button, LinearProgress, Grid } from '@material-ui/core';
 import { TextField } from 'formik-material-ui';
 import AddBox from '@material-ui/icons/AddBox'
 import useStyles from '../styles.jsx'
@@ -92,10 +92,17 @@ export default class AvailableDomainForm extends React.Component {
 							<Field component={TextField} name="ttlSeconds" type="text" label="TTL (sec)" />
 							<br />
 							{isSubmitting && <LinearProgress />}
-							<br />
-							<br />
-							<Button variant="contained" color="primary" disabled={isSubmitting} onClick={submitForm}>Submit</Button>
-							<Button variant="contained" color="secondary" disabled={isSubmitting} onClick={this.handleCancelClicked}>Cancel</Button>
+
+							<br /><br />
+
+							<Grid container direction="row" justify="flex-start" alignItems="flex-start" spacing={3}>
+								<Grid item>
+									<Button variant="contained" color="primary" disabled={isSubmitting} onClick={submitForm}>Submit</Button>
+								</Grid>
+								<Grid item>
+									<Button variant="contained" color="secondary" disabled={isSubmitting} onClick={this.handleCancelClicked}>Cancel</Button>
+								</Grid>
+							</Grid>
 						</Form>
 					)}
 				</Formik>

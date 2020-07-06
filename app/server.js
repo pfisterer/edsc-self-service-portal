@@ -125,6 +125,7 @@ app.use('/', keycloak.protect(), express.static(path.join(__dirname, '../dist/fr
 
 app.use('/api/v1/auth', require('./auth')(keycloak))
 app.use('/api/v1/dns', require('./dns-names')(options))
+app.use('/api/v1/microk8s', require('./apps/microk8s')(options))
 
 // Custom 404 handler
 app.use('*', function (req, res) { res.status(404).send('Not found'); });

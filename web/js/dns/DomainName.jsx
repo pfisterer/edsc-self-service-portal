@@ -133,7 +133,7 @@ function DomainNameStatus(props) {
 					<h3>Status</h3>
 				</Grid>
 				<Grid item xs={2}>
-					<Button key={props.id} variant="contained" color="primary" startIcon={<RefreshIcon />}
+					<Button key={props.id} variant="contained" color="secondary" startIcon={<RefreshIcon />}
 						className={useStyles.button} onClick={props.onRefreshClicked}>
 						Refresh
 						</Button>

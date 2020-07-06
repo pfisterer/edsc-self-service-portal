@@ -22,6 +22,13 @@ export const mainListItems = (
 			</ListItemIcon>
 			<ListItemText primary="DNS" />
 		</ListItem>
+
+		<ListItem button component={ReactLink} to="/apps/microk8s">
+			<ListItemIcon>
+				<ShoppingCartIcon />
+			</ListItemIcon>
+			<ListItemText primary="MicroK8s" />
+		</ListItem>
 	</div>
 );
 
