@@ -3,7 +3,7 @@ const router = addAsync(require('express').Router())
 const CustomResourceAccess = require('./custom-resource-access')
 
 module.exports = function (options) {
-	const crs = new CustomResourceAccess(options)
+	const crs = new CustomResourceAccess(options.crdGroup, options.crdVersion, options.crdPlural, options)
 	const log = options.logger("dns-names")
 	const policy = options.policy
 

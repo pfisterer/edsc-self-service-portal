@@ -14,17 +14,24 @@ const { program: optionparser } = require('commander')
 
 let options = optionparser
 	.storeOptionsAsProperties(true)
-	.option('-v, --verbose', "Display verbose output", false)
 	.option('--session-store <name>', "Session store to use (valid values: inmemory)", "inmemory")
 	.option('--keycloak-config <file>', "Keycloak config file to use", "config/keycloak-dennis-dev.json")
-	.option('--crd-group <group>', 'CRD group name', 'dnsseczone.farberg.de')
-	.option('--crd-version <version>', 'CRD version', 'v1')
-	.option('--crd-plural <plural>', 'CRD Plural', 'dnsseczones')
 	.option('--port <port>', 'Web server port', 8080)
 	.option('--policy-file <file>', 'The policy to load', 'edsc-policy')
 	.option('--namespace <ns>', 'Kubernetes namespace', 'default')
 	.option('--mode <mode>', 'The mode to start the app in (development or production)', 'production')
-	.version('0.0.2')
+	//DnsSecZones
+	.option('--crd-group <group>', 'CRD group name', 'dnsseczone.farberg.de')
+	.option('--crd-version <version>', 'CRD version', 'v1')
+	.option('--crd-plural <plural>', 'CRD Plural', 'dnsseczones')
+	//MicroK8s
+	.option('--microk8s-crd-group <group>', 'Microk8s CRD group name', 'mk8.farberg.de')
+	.option('--microk8s-crd-version <version>', 'Microk8s CRD version', 'v1')
+	.option('--microk8s-crd-plural <plural>', 'Microk8s CRD Plural', 'microkeights')
+	.option('--microk8s-crd-kind <plural>', 'Microk8s CRD Kind', 'MicrokEight')
+	//Others
+	.option('-v, --verbose', "Display verbose output", false)
+	.version('0.0.3')
 	.addHelpCommand()
 	.parse()
 	.opts()
@@ -120,7 +127,7 @@ if (devMode) {
 // Setup routes
 // ------------------------------------------------
 
-console.log(`Using path ${path.join(__dirname, '../dist/frontend')} to serve /`)
+log.debug(`Using path ${path.join(__dirname, '../dist/frontend')} to serve /`)
 app.use('/', keycloak.protect(), express.static(path.join(__dirname, '../dist/frontend')))
 
 app.use('/api/v1/auth', require('./auth')(keycloak))
@@ -128,7 +135,7 @@ app.use('/api/v1/dns', require('./dns-names')(options))
 app.use('/api/v1/microk8s', require('./apps/microk8s')(options))
 
 // Custom 404 handler
-app.use('*', function (req, res) { res.status(404).send('Not found'); });
+//app.use('*', function (req, res) { log.warn("Unknown URL requested: ", req.url, req.headers); res.status(404).send('Not found'); });
 
 // Start server
 app.listen(options.port, () => {

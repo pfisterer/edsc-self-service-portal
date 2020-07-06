@@ -23,7 +23,7 @@ module.exports = function (options) {
 		"enable_nginx": [validation.isBoolean],
 	}
 
-	const crs = new CustomResourceAccess(options)
+	const crs = new CustomResourceAccess(options.microk8sCrdGroup, options.microk8sCrdVersion, options.microk8sCrdPlural, options)
 	const log = options.logger("microk8s")
 
 	async function getCrs(userinfo) {
@@ -49,8 +49,8 @@ module.exports = function (options) {
 		spec.associatedPrincipals = [userinfo.sub]
 
 		let cr = {
-			"apiVersion": "mk8.farberg.de/v1",
-			"kind": "MicrokEight",
+			"apiVersion": `${options.microk8sCrdGroup}/${options.microk8sCrdVersion}`,
+			"kind": options.microk8sCrdKind,
 			"metadata": {
 				"name": id
 			},
@@ -60,11 +60,10 @@ module.exports = function (options) {
 		return await crs.createItem(cr)
 	}
 
-
 	router.getAsync('/', options.keycloak.enforcer(), async (req, res) => {
 		const userinfo = options.userinfo(req);
 		const crs = await getCrs(userinfo)
-		log.debug(`getAsync: crs user ${userinfo.sub}`, crs)
+		log.debug(`getAsync: got ${crs.length} crs user ${userinfo.sub}`)
 		res.json(crs)
 	})
 
