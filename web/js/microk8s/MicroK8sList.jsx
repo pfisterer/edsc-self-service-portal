@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, CardContent, TableContainer, Table, TableBody, TableRow, TableCell, Box, Button } from '@material-ui/core';
+import { Grid, CardContent, TableContainer, Table, TableBody, TableRow, TableCell, Paper, Button } from '@material-ui/core';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import useFetch from 'use-http'
 import LoadingIndicator from '../LoadingIndicator.jsx';
@@ -12,7 +12,16 @@ export default function MicroK8sList(props) {
 	let handleOnContentChanged = () => { }
 
 	let renderMicrok8s = (object) => {
-		return JSON.stringify(object)
+		return <TableContainer component={Paper} >
+			<Table className={useStyles.table} aria-label="simple table">
+				<TableBody>
+					<TableRow key='log_output'>
+						<TableCell>Log Output</TableCell>
+						<TableCell><pre>{object.status.log_output}</pre></TableCell>
+					</TableRow>
+				</TableBody>
+			</Table>
+		</TableContainer >
 	}
 
 	return <>
@@ -29,9 +38,8 @@ export default function MicroK8sList(props) {
 		</Grid>
 
 
-
-		{error && 'Error!'}
+		{error && 'Error: ' + error}
 		{loading && <LoadingIndicator />}
-		{data.map(obj => renderMicrok8s(obj))}
+		{!error && data.map(obj => renderMicrok8s(obj))}
 	</>
 }

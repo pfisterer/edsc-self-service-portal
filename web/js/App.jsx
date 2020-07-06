@@ -15,11 +15,15 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { createMuiTheme } from '@material-ui/core/styles';
+import { Grid } from '@material-ui/core'
+
 import { mainListItems, secondaryListItems } from './menu_items.jsx';
+import EdscLogo from "../img/edsc-logo.svg"
 import Home from './Home.jsx';
 import Dns from './dns/Dns.jsx';
 import MicroK8s from './microk8s/MicroK8s.jsx';
 import useStyles from './styles.jsx'
+
 
 function Copyright() {
 	return (
@@ -80,7 +84,7 @@ export default function Dashboard() {
 							</IconButton>
 							<Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
 								EDSC Portal
-          		</Typography>
+							</Typography>
 							{/*
 						<IconButton color="inherit">
 							<Badge badgeContent={''} color="secondary">

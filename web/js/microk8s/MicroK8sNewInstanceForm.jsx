@@ -92,7 +92,7 @@ export default function MicroK8sNewInstanceForm(props) {
 
 		return (
 			<>
-				<h3>Create new MicroK8s instance</h3>
+				<h2>Create new MicroK8s instance</h2>
 				<Card variant="outlined" className={useStyles.root}>
 					<CardContent>
 						<p>
