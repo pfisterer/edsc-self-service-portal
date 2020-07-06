@@ -2,12 +2,13 @@ const k8s = require('@kubernetes/client-node');
 
 class CrAccess {
 
-	constructor(options) {
+	constructor(crdGroup, crdVersion, crdPlural, options) {
 		this.log = options.logger ? options.logger("CrAccess") : console
 
-		this.crdGroup = options.crdGroup;
-		this.crdVersion = options.crdVersion;
-		this.crdPlural = options.crdPlural
+		this.crdGroup = crdGroup;
+		this.crdVersion = crdVersion;
+		this.crdPlural = crdPlural
+
 		this.namespace = options.namespace
 
 		this.kubeConfig = new k8s.KubeConfig();
@@ -20,6 +21,8 @@ class CrAccess {
 	}
 
 	async listItems() {
+		//this.log.debug(`listItems: group=${this.crdGroup}, crdVersion=${this.crdVersion}, crdPlural=${this.crdPlural}`)
+
 		const res = await this.customObjectsApi.listNamespacedCustomObject(
 			this.crdGroup,
 			this.crdVersion,
