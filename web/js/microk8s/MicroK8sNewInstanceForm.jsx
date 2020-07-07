@@ -30,7 +30,7 @@ export default function MicroK8sNewInstanceForm(props) {
 	const [errorMsg, setErrorMsg] = useState(undefined)
 
 	let handleSubmitClicked = (values, { setSubmitting }) => {
-		fetch(`api/v1/apps/microk8s/`, {
+		fetch(`api/v1/microk8s/`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(values)
@@ -38,6 +38,7 @@ export default function MicroK8sNewInstanceForm(props) {
 			setSubmitting(false)
 
 			if (res.status === 200) {
+				setEditing(false)
 				setErrorMsg(undefined)
 
 				//notify parent
@@ -78,11 +79,13 @@ export default function MicroK8sNewInstanceForm(props) {
 	}
 
 	function renderErrorMessage() {
+		const wordWrapStyle = { whiteSpace: 'pre-wrap', wordWrap: 'break-word', wordBreak: 'break-all', overflowWrap: 'break-word', lineBreak: 'strict', display: 'inline-block' }
+
 		return <>
 			<h3>An error occured</h3>
 			<Card variant="outlined" className={useStyles.root}>
 				<CardContent>
-					<h4>{errorMsg}</h4>
+					<pre style={wordWrapStyle}>{errorMsg}</pre>
 				</CardContent>
 			</Card>
 		</>

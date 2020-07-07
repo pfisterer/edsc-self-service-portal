@@ -38,8 +38,10 @@ module.exports = function (options) {
 
 	async function deleteCr(id, userinfo) {
 		const cr = await getCrById(userinfo, id)
-		if (cr)
-			return await crs.deleteItem(domain.metadata.name)
+		if (cr) {
+			log.info(`Deleting custom resource ${id}`)
+			return await crs.deleteItem(cr.metadata.name)
+		}
 
 		throw `deleteCr: No custom resource found with id ${id} found for user ${userinfo.sub}`
 	}
@@ -68,6 +70,7 @@ module.exports = function (options) {
 	})
 
 	router.postAsync('/', options.keycloak.enforcer(), async (req, res) => {
+		log.info("Request", req)
 		try {
 			const userinfo = options.userinfo(req);
 			if (!userinfo.email_verified || !userinfo.email) {
@@ -75,13 +78,13 @@ module.exports = function (options) {
 				return
 			}
 
-			const id = `microk8s-${userinfo.sub}-${values.instance_name}`
+			const id = `microk8s-${userinfo.sub}-${req.body.instance_name}`.toLowerCase()
 			await createCr(id, userinfo, req.body)
 
 			res.json({ "done": true })
 		} catch (e) {
 			log.error("Unable to create custom resource: ", e)
-			res.status(500 /*Internal server error*/).send("")
+			res.status(500 /*Internal server error*/).send(e)
 		}
 	})
 
