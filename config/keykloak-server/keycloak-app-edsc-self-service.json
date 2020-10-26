@@ -8,7 +8,10 @@
     "clientAuthenticatorType": "client-secret",
     "redirectUris": [
         "http://localhost:8080/*",
-        "http://141.72.191.*"
+        "http://portal.edsc.farberg.de*",
+        "https://portal.edsc.farberg.de*",
+        "http://141.72.191.*",
+        "https://141.72.191.*"
     ],
     "webOrigins": [
         "http://localhost:8080"
@@ -44,8 +47,8 @@
     "defaultClientScopes": [
         "web-origins",
         "role_list",
-        "roles",
         "profile",
+        "roles",
         "email"
     ],
     "optionalClientScopes": [
