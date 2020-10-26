@@ -16,11 +16,17 @@ module.exports =
 		rules: [
 			{
 				test: /\.(js|jsx)$/,
-				exclude: /node_modules/,
-				loader: ["babel-loader"]
+
+				// https://github.com/webpack/webpack/issues/11467
+				resolve: {
+					fullySpecified: false
+				},
+
+				//exclude: path.resolve(__dirname, "node_modules"),
+				use: ["babel-loader"]
 			}, {
 				test: /\.css$/,
-				loader: [
+				use: [
 					'style-loader',
 					'css-loader',
 				]

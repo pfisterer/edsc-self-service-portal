@@ -1,9 +1,7 @@
 const HtmlWebPackPlugin = require("html-webpack-plugin");
-var nodeExternals = require('webpack-node-externals');
 const path = require('path')
 
 module.exports = [
-
 	{
 		"mode": "production",
 		entry: {
@@ -20,12 +18,16 @@ module.exports = [
 			rules: [
 				{
 					test: /\.(js|jsx)$/,
-					loader: 'shebang-loader'
+					use: 'babel-loader',
+					// https://github.com/webpack/webpack/issues/11467
+					resolve: {
+						fullySpecified: false
+					},
+					exclude: path.resolve(__dirname, 'node_modules')
 				}
 			]
 		},
-		//,externals: [nodeExternals()]
-		externals: { uws: "uws", emitter: "emitter", "browser-sync/lib/server/utils": "browser-sync/lib/server/utils" }
+		externals: { uws: "uws", emitter: "emitter", "browser-sync": "browser-sync" }
 	},
 	{
 		"mode": "production",
@@ -35,27 +37,30 @@ module.exports = [
 		output: {
 			path: path.resolve(__dirname, 'dist/frontend')
 		},
-		devtool: false,
 		module: {
 			rules: [
 				{
 					test: /\.(js|jsx)$/,
-					exclude: /node_modules/,
-					loader: "babel-loader"
-				}, {
+					// https://github.com/webpack/webpack/issues/11467
+					resolve: {
+						fullySpecified: false
+					},
+					use: "babel-loader",
+				},
+				{
 					test: /\.css$/,
-					loader: [
+					use: [
 						'style-loader',
 						'css-loader',
-					]
+					],
 				},
 				{
 					test: /\.html$/,
-					loader: "html-loader"
+					use: "html-loader",
 				},
 				{
 					test: /\.svg$/,
-					loader: "@svgr/webpack"
+					use: "@svgr/webpack",
 				}
 			]
 		},
