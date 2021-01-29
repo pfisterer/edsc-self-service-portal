@@ -21,7 +21,7 @@ let defaultValues = {
 	floating_ip_pool: "ext-net-201",
 	dns_server1: "1.1.1.1",
 	dns_server2: "8.8.8.8",
-	microk8s_version: "1.18/stable",
+	microk8s_version: "1.20/stable",
 	enable_nginx: true
 }
 
