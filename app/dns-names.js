@@ -92,6 +92,7 @@ module.exports = function (options) {
 		const result = await getAvailableDomains(userinfo)
 
 		if (!result.error) {
+			log.debug("Got a result for user", userinfo.preferred_username, ":", result.available)
 			res.json(result.available)
 		} else {
 			log.error(`Error while getting available domains from policy:`, policy.error)
@@ -127,7 +128,7 @@ module.exports = function (options) {
 	router.getAsync('/domains/list', options.keycloak.enforcer(), async (req, res) => {
 		const userinfo = options.userinfo(req);
 		const domainIds = await domainIdsOfUser(userinfo)
-		//log.debug(`Domain ids of user ${userinfo.sub}`, domainIds)
+		log.debug(`Domain ids of user ${userinfo.sub}`, domainIds)
 		res.json(domainIds)
 	})
 

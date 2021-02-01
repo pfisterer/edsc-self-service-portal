@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { HashRouter as Router, Route, Switch } from "react-router-dom";
 import clsx from 'clsx';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -20,8 +20,8 @@ import { Grid } from '@material-ui/core'
 import { mainListItems, secondaryListItems } from './menu_items.jsx';
 import EdscLogo from "../img/edsc-logo.svg"
 import Home from './Home.jsx';
-import Dns from './dns/Dns.jsx';
-import MicroK8s from './microk8s/MicroK8s.jsx';
+import AppDns from './dns/AppDns.jsx';
+import AppMicroK8s from './microk8s/AppMicroK8s.jsx';
 import useStyles from './styles.jsx'
 
 
@@ -119,10 +119,12 @@ export default function Dashboard() {
 									<Home />
 								</Route>
 								<Route path="/dns">
-									<Dns />
+									<Suspense fallback='Loading...'>
+										<AppDns />
+									</Suspense>
 								</Route>
 								<Route path="/apps/microk8s">
-									<MicroK8s />
+									<AppMicroK8s />
 								</Route>
 							</Switch>
 						</Container>

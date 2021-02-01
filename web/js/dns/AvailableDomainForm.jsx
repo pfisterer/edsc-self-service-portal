@@ -29,8 +29,8 @@ export default class AvailableDomainForm extends React.Component {
 		let done = () => {
 			setSubmitting(false);
 
-			if (this.props.onContentChanged) {
-				this.props.onContentChanged()
+			if (this.props.onContentsChanged) {
+				this.props.onContentsChanged()
 			}
 
 			this.setState({ editing: false })
