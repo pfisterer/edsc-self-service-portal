@@ -4,6 +4,7 @@ import { Card, CardContent } from '@material-ui/core';
 import useStyles from '../styles.jsx'
 import DomainName from './DomainName.jsx'
 import AvailableDomainForm from './AvailableDomainForm.jsx'
+import LoadingIndicator from '../LoadingIndicator.jsx'
 
 function NoAvailableDomains() {
 	return <h3>There are no available domains for your account.</h3>
@@ -24,7 +25,7 @@ export default function AppDns() {
 	}
 
 	return <>
-		<Suspense fallback='Loading available domains...'>
+		<Suspense fallback={<LoadingIndicator />}>
 			<h1>Available Domains</h1>
 			<Card variant="outlined" className={useStyles.root}>
 				<CardContent>
@@ -38,7 +39,7 @@ export default function AppDns() {
 			</Card>
 		</Suspense>
 
-		<Suspense fallback='Loading existing domains...'>
+		<Suspense fallback={<LoadingIndicator />}>
 			{existingDomainsError ? <h3>Error loading existing domains: {existingDomainsError}</h3> :
 				existingDomains.map(domain =>
 					<DomainName key={domain} id={domain} onContentsChanged={onContentsChanged} />)}

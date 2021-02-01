@@ -48,7 +48,7 @@ export default function MicroK8s(props) {
 	return <>
 		<h1>MicroK8s</h1>
 		<MicroK8sNewInstanceForm onContentChanged={contentChanged} />
-		<Suspense fallback='Loading...'>
+		<Suspense fallback={<LoadingIndicator />}>
 			<MicroK8sList />
 		</Suspense>
 	</>

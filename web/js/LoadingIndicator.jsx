@@ -1,27 +1,13 @@
 import React from 'react';
-import { FadeLoader } from "react-spinners";
+import { PulseLoader } from "react-spinners";
 
-export default class LoadingIndicator extends React.Component {
-	state = {
-		display: false,
-	}
+export default function LoadingIndicator(props) {
+	const [display, setDisplay] = React.useState(false);
 
-	componentDidMount() {
-		this.timeoutId = setTimeout(() => this.setState({ display: true }), this.props.deferDisplayMs || 200)
-	}
+	React.useEffect(() => {
+		const timeoutId = setTimeout(() => setDisplay(true), props.deferDisplayMs || 200)
+		return () => clearTimeout(timeoutId)
+	}, [])
 
-	componentWillUnmount() {
-		clearTimeout(this.timeoutId)
-	}
-
-
-	render() {
-		return (
-			<div style={{ visibility: this.state.display ? 'visible' : 'hidden' }}>
-				<FadeLoader height="10px" width="5px" radius="2px" margin="2px" color="grey" />
-			</div>
-		);
-
-	}
-
+	return display ? <PulseLoader height="10px" width="5px" radius="2px" margin="2px" color="grey" /> : ""
 }

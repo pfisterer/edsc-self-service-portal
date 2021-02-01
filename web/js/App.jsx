@@ -15,15 +15,13 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { createMuiTheme } from '@material-ui/core/styles';
-import { Grid } from '@material-ui/core'
 
+import LoadingIndicator from './LoadingIndicator.jsx'
 import { mainListItems, secondaryListItems } from './menu_items.jsx';
-import EdscLogo from "../img/edsc-logo.svg"
 import Home from './Home.jsx';
 import AppDns from './dns/AppDns.jsx';
 import AppMicroK8s from './microk8s/AppMicroK8s.jsx';
 import useStyles from './styles.jsx'
-
 
 function Copyright() {
 	return (
@@ -119,7 +117,7 @@ export default function Dashboard() {
 									<Home />
 								</Route>
 								<Route path="/dns">
-									<Suspense fallback='Loading...'>
+									<Suspense fallback={<LoadingIndicator />}>
 										<AppDns />
 									</Suspense>
 								</Route>
