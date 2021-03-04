@@ -6,18 +6,20 @@ import DomainName from './DomainName.jsx'
 import AvailableDomainForm from './AvailableDomainForm.jsx'
 import LoadingIndicator from '../LoadingIndicator.jsx'
 
-function NoAvailableDomains() {
-	return <h3>There are no available domains for your account.</h3>
-}
-
-function AvailableDomainsError() {
-	return <h3>Error loading the available domains for your account.</h3>
-}
-
 export default function AppDns() {
 	const options = { loading: true, cachePolicy: 'no-cache', suspense: true }
-	const { get: getAvailableDomains, error: availableDomainsError, data: availableDomains = [] } = useFetch('api/v1/dns/domains/available', options, [])
-	const { get: getExistingDomains, error: existingDomainsError, data: existingDomains = [] } = useFetch('api/v1/dns/domains/list', options, [])
+
+	const {
+		get: getAvailableDomains,
+		error: availableDomainsError,
+		data: availableDomains = []
+	} = useFetch('api/v1/dns/domains/available', options, [])
+
+	const {
+		get: getExistingDomains,
+		error: existingDomainsError,
+		data: existingDomains = []
+	} = useFetch('api/v1/dns/domains/list', options, [])
 
 	function onContentsChanged() {
 		getExistingDomains()
@@ -26,23 +28,35 @@ export default function AppDns() {
 
 	return <>
 		<Suspense fallback={<LoadingIndicator />}>
+			{/* ----------- Available Domains ------------------- */}
 			<h1>Available Domains</h1>
 			<Card variant="outlined" className={useStyles.root}>
 				<CardContent>
-					{availableDomainsError && <AvailableDomainsError />}
-					{(!availableDomains || availableDomains.length == 0) && <NoAvailableDomains />}
-
-					{availableDomains != null && availableDomains.length > 0 && availableDomains.map(domain =>
-						<AvailableDomainForm key={domain} domain={domain} onContentsChanged={onContentsChanged} />)
-					}
+					<DomainsContent type="available" error={availableDomainsError} domains={availableDomains} />
 				</CardContent>
 			</Card>
 		</Suspense>
 
+		{/* ----------- Existing Domains ------------------- */}
 		<Suspense fallback={<LoadingIndicator />}>
-			{existingDomainsError ? <h3>Error loading existing domains: {existingDomainsError}</h3> :
-				existingDomains.map(domain =>
-					<DomainName key={domain} id={domain} onContentsChanged={onContentsChanged} />)}
+			<DomainsContent type="existing" error={existingDomainsError} domains={existingDomains} onContentsChanged={onContentsChanged} />
 		</Suspense>
+
 	</>
+}
+
+function DomainsContent(props) {
+	if (props.error) {
+		return <h3>Error loading the available domains for your account.</h3>
+
+	} else if (props.domains && props.domains.length > 0) {
+		return <>{props.domains.map(domain =>
+			props.type === "available" ?
+				<AvailableDomainForm key={domain} domain={domain} onContentsChanged={onContentsChanged} />
+				:
+				<DomainName key={domain} id={domain} onContentsChanged={props.onContentsChanged} />
+		)}</>
+	} else {
+		return <h3>There are no available domains for your account.</h3>
+	}
 }

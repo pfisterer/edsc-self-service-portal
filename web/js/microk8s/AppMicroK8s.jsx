@@ -4,6 +4,7 @@ import RefreshIcon from '@material-ui/icons/Refresh'
 import useFetch from 'use-http'
 import useStyles from '../styles.jsx'
 
+import LoadingIndicator from '../LoadingIndicator.jsx'
 import MicroK8sCard from './MicroK8sCard.jsx'
 import MicroK8sNewInstanceForm from './MicroK8sNewInstanceForm.jsx'
 
@@ -39,9 +40,9 @@ function MicroK8sList(props) {
 
 export default function MicroK8s(props) {
 	const options = { loading: true, cachePolicy: 'no-cache', suspense: true }
-	const { get, del, error, data = [] } = useFetch('api/v1/microk8s/', options, [])
-	const handleRefreshClicked = () => { console.log("Refreshing"); get(); }
-	const handleDeleteClicked = (object) => { console.log("DELETE"); del(object.metadata.name).finally(handleRefreshClicked()); }
+	//const { get, del, error, data = [] } = useFetch('api/v1/microk8s/', options, [])
+	//const handleRefreshClicked = () => { console.log("Refreshing"); get(); }
+	//const handleDeleteClicked = (object) => { console.log("DELETE"); del(object.metadata.name).finally(handleRefreshClicked()); }
 
 	let contentChanged = () => { }
 
