@@ -27,8 +27,15 @@ module.exports = function (options) {
 	const log = options.logger("microk8s")
 
 	async function getCrs(userinfo) {
-		return (await crs.listItems())
-			.filter(cr => cr.spec.associatedPrincipals.includes(userinfo.sub))
+		try {
+			const res = await crs.listItems()
+			return (await res)
+				.filter(cr => cr.spec.associatedPrincipals.includes(userinfo.sub))
+
+		} catch (bla) {
+			console.error("bla", bla)
+		}
+
 	}
 
 	async function getCrById(userinfo, id) {
@@ -65,7 +72,7 @@ module.exports = function (options) {
 	router.getAsync('/', options.keycloak.enforcer(), async (req, res) => {
 		const userinfo = options.userinfo(req);
 		const crs = await getCrs(userinfo)
-		log.debug(`getAsync: got ${crs.length} crs user ${userinfo.sub}`)
+		log.debug(`getAsync: got ${crs?.length} crs user ${userinfo.sub}`)
 		res.json(crs)
 	})
 

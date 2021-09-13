@@ -14,7 +14,7 @@ import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { ThemeProvider } from '@material-ui/core/styles';
-import { createMuiTheme } from '@material-ui/core/styles';
+import { createTheme } from '@material-ui/core/styles';
 
 import LoadingIndicator from './LoadingIndicator.jsx'
 import { mainListItems, secondaryListItems } from './menu_items.jsx';
@@ -29,11 +29,11 @@ function Copyright() {
 			{'Copyright © '}
 			<Link color="inherit" href="https://dennis-pfisterer.de/" target="_blank">
 				Dennis Pfisterer
-      	</Link>
+			</Link>
 			{', '}
 			<Link color="inherit" href="https://edsc-dhbw.github.io/" target="_blank">
 				Enterprise Data Science Center (EDSC)
-      	</Link>
+			</Link>
 			{' '}
 			{new Date().getFullYear()}
 			{'.'}
@@ -42,7 +42,7 @@ function Copyright() {
 	);
 }
 
-const theme = createMuiTheme({
+const theme = createTheme({
 	palette: {
 		primary: {
 			// light: will be calculated from palette.primary.main,

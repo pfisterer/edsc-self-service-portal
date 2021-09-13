@@ -21,7 +21,7 @@ class CrAccess {
 	}
 
 	async listItems() {
-		//this.log.debug(`listItems: group=${this.crdGroup}, crdVersion=${this.crdVersion}, crdPlural=${this.crdPlural}`)
+		this.log.debug(`listItems: group=${this.crdGroup}, crdVersion=${this.crdVersion}, crdPlural=${this.crdPlural}`)
 
 		const res = await this.customObjectsApi.listNamespacedCustomObject(
 			this.crdGroup,
@@ -31,7 +31,6 @@ class CrAccess {
 			'false',
 			'', //<labelSelectorExpresson>
 		);
-
 		return res.body.items
 	}
 

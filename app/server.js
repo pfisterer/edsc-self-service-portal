@@ -2,7 +2,6 @@ const path = require('path')
 const express = require('express')
 const session = require('express-session')
 const { addAsync } = require('@awaitjs/express');
-const bodyParser = require('body-parser')
 const Keycloak = require('keycloak-connect')
 const cors = require('cors')
 const log4js = require('log4js')
@@ -91,7 +90,7 @@ options = Object.assign({}, options, {
 
 const app = addAsync(express());
 
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(cors());
 
 app.use(session({
