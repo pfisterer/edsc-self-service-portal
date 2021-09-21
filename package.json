@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "build": "npx webpack --config webpack.config.prod.js",
-    "start": "npx webpack --watch --config webpack.config.dev.js"
+    "build-dev": "npx webpack --config webpack.config.dev.js",
+    "start": "npx webpack --watch --config webpack.config.frontend-dev.js"
   },
   "author": "Dennis Pfisterer <github@farberg.de>",
   "license": "BSD",
@@ -40,19 +41,26 @@
     "babel-loader": "^8.2.2",
     "browser-sync": "^2.27.5",
     "connect-browser-sync": "^2.1.0",
-    "css-loader": "^6.2.0",
+    "css-loader": "^6.3.0",
     "html-loader": "^2.1.2",
     "html-webpack-plugin": "^5.3.2",
     "nodemon-webpack-plugin": "^4.5.2",
     "shebang-loader": "0.0.1",
     "style-loader": "^3.2.1",
-    "webpack": "^5.52.1",
+    "webpack": "^5.53.0",
     "webpack-cli": "^4.8.0",
     "webpack-node-externals": "^3.0.0"
   },
   "babel": {
     "presets": [
-      "@babel/preset-env",
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "esmodules": true
+          }
+        }
+      ],
       "@babel/preset-react"
     ],
     "plugins": [

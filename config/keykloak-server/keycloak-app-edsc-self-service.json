@@ -10,6 +10,8 @@
         "http://localhost:8080/*",
         "http://portal.edsc.farberg.de*",
         "https://portal.edsc.farberg.de*",
+        "http://portal.cloud.dhbw-mannheim.de*",
+        "https://portal.cloud.dhbw-mannheim.de*",
         "http://141.72.191.*",
         "https://141.72.191.*"
     ],

@@ -1,0 +1,42 @@
+# -------------------------------------------------------------
+# Builder
+# -------------------------------------------------------------
+FROM node:15-alpine AS builder
+LABEL maintainer="Dennis Pfisterer, http://www.dennis-pfisterer.de"
+
+# Copy everything and create workdir
+WORKDIR /app
+COPY package.json package-lock.json /app/
+
+# Install  dependencies
+RUN npm install --no-optional && npm cache clean --force
+
+# Install app
+COPY app/ app/
+COPY web/ web/
+COPY webpack.config.dev.js /app/
+
+RUN npm run build-dev
+
+# -------------------------------------------------------------
+# Final container image
+# -------------------------------------------------------------
+FROM node:15-alpine
+
+WORKDIR /app
+
+COPY config/ config/
+COPY --from=builder /app/dist/frontend/ /app/dist/frontend/
+COPY --from=builder /app/dist/backend/ /app/app/
+
+# Debugging output
+RUN find /app | grep -v node_modules
+
+# set our node environment, either development or production
+ARG NODE_ENV=development
+ENV NODE_ENV $NODE_ENV
+
+EXPOSE 8080
+
+ENTRYPOINT ["node", "app/server.js"]
+CMD [""]
