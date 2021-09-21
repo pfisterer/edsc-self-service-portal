@@ -1,11 +1,17 @@
 const { addAsync } = require('@awaitjs/express');
 const router = addAsync(require('express').Router())
-const CustomResourceAccess = require('./custom-resource-access')
+const CustomResourceAccess = require('../custom-resource-access')
 
 module.exports = function (options) {
-	const crs = new CustomResourceAccess(options.crdGroup, options.crdVersion, options.crdPlural, options)
-	const log = options.logger("dns-names")
+	const log = options.logger("dns")
 	const policy = options.policy
+	let crsInstance = null
+
+	function crs() {
+		if (!crsInstance)
+			crsInstance = new CustomResourceAccess(options.crdGroup, options.crdVersion, options.crdPlural, options)
+		return crsInstance
+	}
 
 	function crToJson(cr) {
 		return {
@@ -15,7 +21,7 @@ module.exports = function (options) {
 	}
 
 	async function crsOfUser(userinfo) {
-		return (await crs.listItems())
+		return (await crs().listItems())
 			.filter(cr =>
 				cr.spec.associatedPrincipals.includes(userinfo.sub))
 	}
@@ -47,7 +53,7 @@ module.exports = function (options) {
 
 	async function deleteDomain(id, userinfo) {
 		const domain = await crOfUserById(id, userinfo)
-		return await crs.deleteItem(domain.metadata.name)
+		return await crs().deleteItem(domain.metadata.name)
 	}
 
 	async function getAvailableDomains(userinfo) {
@@ -84,19 +90,24 @@ module.exports = function (options) {
 			}
 		}
 		log.debug("Creating domain cr: ", cr)
-		return await crs.createItem(cr)
+		return await crs().createItem(cr)
 	}
 
 	router.getAsync('/domains/available', options.keycloak.enforcer(), async (req, res) => {
-		const userinfo = options.userinfo(req);
-		const result = await getAvailableDomains(userinfo)
+		try {
+			const userinfo = options.userinfo(req);
+			const result = await getAvailableDomains(userinfo)
 
-		if (!result.error) {
-			log.debug("Got a result for user", userinfo.preferred_username, ":", result.available)
-			res.json(result.available)
-		} else {
-			log.error(`Error while getting available domains from policy:`, policy.error)
-			res.status(501 /* not implemented */).json({ error: policyResult.error })
+			if (!result.error) {
+				log.debug("Got a result for user", userinfo.preferred_username, ":", result.available)
+				res.json(result.available)
+			} else {
+				log.error(`Error while getting available domains from policy:`, policy.error)
+				res.status(500).json({ error: result.error })
+			}
+		} catch (error) {
+			log.error(`Exception while getting available domains from policy:`, error)
+			res.status(500).json({ error: "Unable to get available domains" })
 		}
 
 	})
@@ -106,7 +117,9 @@ module.exports = function (options) {
 			const userinfo = options.userinfo(req);
 
 			if (!userinfo.email_verified || !userinfo.email) {
-				res.status(403 /*Forbidden*/).send("Not allowed: the email address of your account has not been verified.")
+				log.warn(`User ${userinfo.preferred_username} has no (verified == ${userinfo.email_verified}) email (== ${userinfo.email})`)
+				res.status(403) // Forbidden
+					.send("Not allowed: the email address of your account has not been verified.")
 				return
 			}
 
@@ -114,14 +127,16 @@ module.exports = function (options) {
 			const policyResult = await getAvailableDomains(userinfo)
 
 			if (policyResult.error || !policyResult.available.includes(values.domainName)) {
-				res.status(403 /*Forbidden*/).send("Not allowed: policy error")
+				res.status(403) // Forbidden
+					.send("Not allowed: policy error")
 			}
 
 			await createDomain(values.domainName, userinfo, values)
 			res.json({ "done": true })
 		} catch (e) {
 			log.error("Unable to create domain: ", e)
-			res.status(500 /*Internal server error*/).send("")
+			res.status(500) // Internal server error
+				.send("")
 		}
 	})
 
@@ -149,7 +164,7 @@ module.exports = function (options) {
 
 		} catch (e) {
 			log.error(`Unable to delete domain ${req.params.id}: `, e)
-			res.status(401 /* not found */).send("Unable to delete domain")
+			res.status(401).send("Unable to delete domain")
 		}
 	})
 

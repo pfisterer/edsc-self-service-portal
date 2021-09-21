@@ -95,7 +95,7 @@ export default class AvailableDomainForm extends React.Component {
 
 							<br /><br />
 
-							<Grid container direction="row" justify="flex-start" alignItems="flex-start" spacing={3}>
+							<Grid container direction="row" justifyContent="flex-start" alignItems="flex-start" spacing={3}>
 								<Grid item>
 									<Button variant="contained" color="primary" disabled={isSubmitting} onClick={submitForm}>Submit</Button>
 								</Grid>

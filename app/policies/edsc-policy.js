@@ -6,10 +6,8 @@ class EdscPolicy {
 
 	availableDomains(userinfo) {
 		const username = userinfo.preferred_username
-		const suffix1 = ".user.edsc.cloud"
-		const suffix2 = ".user.edsc.blubb"
-		const domains = [username + suffix1, username + suffix2]
-
+		const suffix1 = ".user.cloud.dhbw-mannheim.de"
+		const domains = [username + suffix1]
 
 		if (!username.match(this.valid_subdomain_regex)) {
 			this.log.error("Username ", username, " does not match the valid pattern", this.valid_subdomain_regex)

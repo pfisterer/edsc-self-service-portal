@@ -100,7 +100,7 @@ export default function MicroK8sNewInstanceForm(props) {
 					<CardContent>
 						<p>
 							Please specify required values. See <a href="https://github.com/pfisterer/edsc-microk8s-controller" target="_blank">pfisterer/edsc-microk8s-controller</a> for details.
-				</p>
+						</p>
 						<Formik
 							initialValues={defaultValues}
 							validate={values => { /* TODO  TODO  TODO  TODO  TODO  TODO  TODO  TODO  */ }}
@@ -108,7 +108,7 @@ export default function MicroK8sNewInstanceForm(props) {
 						>
 							{({ submitForm, isSubmitting }) => (
 								<Form>
-									<Grid container direction="row" justify="flex-start" alignItems="flex-start" spacing={3}>
+									<Grid container direction="row" justifyContent="flex-start" alignItems="flex-start" spacing={3}>
 										<Grid item xs={12} sm={12} md={6} lg={6} xl={4}>
 											<Field component={TextField} name="instance_name" type="text" label="Custom Instance Name" fullWidth={true} />
 										</Grid>
@@ -166,7 +166,7 @@ export default function MicroK8sNewInstanceForm(props) {
 									{isSubmitting && <LinearProgress />}
 									<br />
 									<br />
-									<Grid container direction="row" justify="flex-start" alignItems="flex-start" spacing={3}>
+									<Grid container direction="row" justifyContent="flex-start" alignItems="flex-start" spacing={3}>
 										<Grid item>
 											<Button variant="contained" color="primary" disabled={isSubmitting} onClick={submitForm}>Submit</Button>
 										</Grid>

@@ -84,6 +84,7 @@ options = Object.assign({}, options, {
 	policy
 })
 
+
 // ------------------------------------------------
 // Setup express
 // ------------------------------------------------
@@ -127,11 +128,11 @@ if (devMode) {
 // ------------------------------------------------
 
 log.debug(`Using path ${path.join(__dirname, '../dist/frontend')} to serve /`)
-app.use('/', keycloak.protect(), express.static(path.join(__dirname, '../dist/frontend')))
 
-app.use('/api/v1/auth', require('./auth')(keycloak))
-app.use('/api/v1/dns', require('./dns-names')(options))
-app.use('/api/v1/microk8s', require('./apps/microk8s')(options))
+app.use('/', keycloak.protect(), express.static(path.join(__dirname, '../dist/frontend')))
+app.use('/api/v1/auth', require('./apps/auth')(keycloak))
+app.use('/api/v1/dns', require('./apps/dns')(options))
+//app.use('/api/v1/microk8s', require('./apps/microk8s')(options))
 
 // Custom 404 handler
 //app.use('*', function (req, res) { log.warn("Unknown URL requested: ", req.url, req.headers); res.status(404).send('Not found'); });

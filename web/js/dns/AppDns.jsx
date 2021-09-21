@@ -52,7 +52,7 @@ function DomainsContent(props) {
 	} else if (props.domains && props.domains.length > 0) {
 		return <>{props.domains.map(domain =>
 			props.type === "available" ?
-				<AvailableDomainForm key={domain} domain={domain} onContentsChanged={onContentsChanged} />
+				<AvailableDomainForm key={domain} domain={domain} onContentsChanged={props.onContentsChanged} />
 				:
 				<DomainName key={domain} id={domain} onContentsChanged={props.onContentsChanged} />
 		)}</>
