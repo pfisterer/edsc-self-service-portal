@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { HashRouter as Router, Route, Switch } from "react-router-dom";
+import { HashRouter as Router, Route, Routes } from "react-router-dom";
 import clsx from 'clsx';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
@@ -69,8 +69,8 @@ export default function Dashboard() {
 
 
 	return (
-		<ThemeProvider theme={theme}>
-			<Router>
+		<Router>
+			<ThemeProvider theme={theme}>
 				<div className={classes.root}>
 					<CssBaseline />
 
@@ -112,26 +112,22 @@ export default function Dashboard() {
 						<div className={classes.appBarSpacer} />
 
 						<Container maxWidth="lg" className={classes.container}>
-							<Switch>
-								<Route exact path="/">
-									<Home />
-								</Route>
-								<Route path="/dns">
+							<Routes>
+								<Route exact path="/" element={<Home />} />
+								<Route path="/dns" element={
 									<Suspense fallback={<LoadingIndicator />}>
 										<AppDns />
 									</Suspense>
-								</Route>
-								<Route path="/apps/microk8s">
-									<AppMicroK8s />
-								</Route>
-							</Switch>
+								} />
+								<Route path="/apps/microk8s" element={<AppMicroK8s />} />
+							</Routes>
 						</Container>
 
 						<Copyright />
 					</main>
 
 				</div>
-			</Router>
-		</ThemeProvider>
+			</ThemeProvider>
+		</Router>
 	);
 }

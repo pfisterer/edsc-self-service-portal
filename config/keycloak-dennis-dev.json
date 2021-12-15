@@ -1,5 +1,5 @@
 {
-	"realm": "master",
+	"realm": "EDSC",
 	"auth-server-url": "https://keycloak.cloud.dhbw-mannheim.de/auth/",
 	"ssl-required": "external",
 	"resource": "edsc-self-service",
